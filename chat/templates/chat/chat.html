@@ -497,6 +497,160 @@
         .author-info a:hover {
             text-decoration: underline;
         }
+        /* Control buttons */
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        .control-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: #fff;
+            border: none;
+        }
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        .color-btn {
+            background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+            color: #fff;
+            border: none;
+        }
+        .color-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+        /* Theme Modal */
+        .theme-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-modal.show {
+            display: flex;
+        }
+        .theme-modal-content {
+            background: #0A0A12;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #2A2A4A;
+        }
+        .theme-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .theme-modal-header h2 {
+            color: #fff;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .theme-close-btn {
+            background: none;
+            border: none;
+            color: #9CA3AF;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+        .theme-close-btn:hover {
+            color: #E94560;
+        }
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .theme-option {
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+        .theme-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .theme-option.active {
+            border-color: #fff;
+        }
+        .theme-option .theme-preview {
+            height: 50px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .theme-option .theme-name {
+            color: #E8E8E8;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        /* Status notification */
+        .status-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        .status-notification.show {
+            transform: translateX(0);
+        }
+        .status-notification.success {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: #fff;
+        }
+        .status-notification.error {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: #fff;
+        }
+        .status-notification.info {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: #fff;
+        }
+        @media (max-width: 600px) {
+            .theme-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -506,6 +660,14 @@
         <p>Search files, ask questions, and get AI-powered answers</p>
         <span class="powered-by">Powered by Ollama Open Source LLMs</span>
         <div class="author-info">Created by <a href="https://github.com/msreekanth02" target="_blank">Sree</a></div>
+        <div class="control-buttons">
+            <button type="button" class="control-btn start-btn" id="start-btn" title="Restart Django Server">
+                🚀 Start
+            </button>
+            <button type="button" class="control-btn color-btn" id="color-btn" title="Choose your color theme">
+                🎨 Color
+            </button>
+        </div>
     </div>
     <div class="chat-body">
         <div class="messages" id="messages">
@@ -553,6 +715,22 @@
         </div>
     </div>
 </div>
+
+<!-- Theme Selection Modal -->
+<div class="theme-modal" id="theme-modal">
+    <div class="theme-modal-content">
+        <div class="theme-modal-header">
+            <h2>🎨 Choose Your Theme</h2>
+            <button type="button" class="theme-close-btn" id="theme-close-btn">×</button>
+        </div>
+        <div class="theme-grid" id="theme-grid">
+            <!-- Themes will be generated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- Status Notification -->
+<div class="status-notification" id="status-notification"></div>
 
 <script>
 // Configure marked for markdown rendering
@@ -791,6 +969,498 @@ searchInput.addEventListener('keypress', (e) => {
         searchBtn.click();
     }
 });
+
+// ============================================
+// Theme Management System - 15 Color Themes
+// ============================================
+const colorThemes = [
+    { 
+        id: 'midnight-pink', 
+        name: 'Midnight Pink', 
+        emoji: '🌙',
+        primary: '#E94560', 
+        secondary: '#FF6B6B',
+        bgDark: '#0A0A0F', 
+        bgMedium: '#0D0D14', 
+        bgLight: '#1A1A2A',
+        text: '#E8E8E8',
+        border: '#2A2A4A'
+    },
+    { 
+        id: 'ocean-blue', 
+        name: 'Ocean Blue', 
+        emoji: '🌊',
+        primary: '#0EA5E9', 
+        secondary: '#38BDF8',
+        bgDark: '#0A0F14', 
+        bgMedium: '#0D1520', 
+        bgLight: '#1A2A3A',
+        text: '#E8F0F8',
+        border: '#2A3A5A'
+    },
+    { 
+        id: 'forest-green', 
+        name: 'Forest Green', 
+        emoji: '🌲',
+        primary: '#10B981', 
+        secondary: '#34D399',
+        bgDark: '#0A0F0D', 
+        bgMedium: '#0D140F', 
+        bgLight: '#1A2A20',
+        text: '#E8F8F0',
+        border: '#2A4A3A'
+    },
+    { 
+        id: 'royal-purple', 
+        name: 'Royal Purple', 
+        emoji: '👑',
+        primary: '#8B5CF6', 
+        secondary: '#A78BFA',
+        bgDark: '#0F0A14', 
+        bgMedium: '#140D20', 
+        bgLight: '#2A1A3A',
+        text: '#F0E8F8',
+        border: '#4A2A6A'
+    },
+    { 
+        id: 'sunset-orange', 
+        name: 'Sunset Orange', 
+        emoji: '🌅',
+        primary: '#F97316', 
+        secondary: '#FB923C',
+        bgDark: '#14100A', 
+        bgMedium: '#1A140D', 
+        bgLight: '#2A2015',
+        text: '#F8F0E8',
+        border: '#4A3A2A'
+    },
+    { 
+        id: 'cherry-red', 
+        name: 'Cherry Red', 
+        emoji: '🍒',
+        primary: '#EF4444', 
+        secondary: '#F87171',
+        bgDark: '#140A0A', 
+        bgMedium: '#1A0D0D', 
+        bgLight: '#2A1515',
+        text: '#F8E8E8',
+        border: '#4A2A2A'
+    },
+    { 
+        id: 'golden-amber', 
+        name: 'Golden Amber', 
+        emoji: '✨',
+        primary: '#F59E0B', 
+        secondary: '#FBBF24',
+        bgDark: '#14120A', 
+        bgMedium: '#1A160D', 
+        bgLight: '#2A2515',
+        text: '#F8F4E8',
+        border: '#4A3E2A'
+    },
+    { 
+        id: 'cyber-cyan', 
+        name: 'Cyber Cyan', 
+        emoji: '💎',
+        primary: '#06B6D4', 
+        secondary: '#22D3EE',
+        bgDark: '#0A1214', 
+        bgMedium: '#0D161A', 
+        bgLight: '#152A30',
+        text: '#E8F8FC',
+        border: '#2A4A50'
+    },
+    { 
+        id: 'lavender-dream', 
+        name: 'Lavender Dream', 
+        emoji: '💜',
+        primary: '#C084FC', 
+        secondary: '#D8B4FE',
+        bgDark: '#100A14', 
+        bgMedium: '#160D1A', 
+        bgLight: '#2A1A35',
+        text: '#F8E8FC',
+        border: '#4A2A5A'
+    },
+    { 
+        id: 'mint-fresh', 
+        name: 'Mint Fresh', 
+        emoji: '🍃',
+        primary: '#2DD4BF', 
+        secondary: '#5EEAD4',
+        bgDark: '#0A1412', 
+        bgMedium: '#0D1A16', 
+        bgLight: '#1A3530',
+        text: '#E8FCF8',
+        border: '#2A5A50'
+    },
+    { 
+        id: 'rose-gold', 
+        name: 'Rose Gold', 
+        emoji: '🌸',
+        primary: '#EC4899', 
+        secondary: '#F472B6',
+        bgDark: '#140A10', 
+        bgMedium: '#1A0D14', 
+        bgLight: '#351A2A',
+        text: '#FCE8F4',
+        border: '#5A2A4A'
+    },
+    { 
+        id: 'arctic-blue', 
+        name: 'Arctic Blue', 
+        emoji: '❄️',
+        primary: '#60A5FA', 
+        secondary: '#93C5FD',
+        bgDark: '#0A0E14', 
+        bgMedium: '#0D121A', 
+        bgLight: '#1A2535',
+        text: '#E8F0FC',
+        border: '#2A3A5A'
+    },
+    { 
+        id: 'neon-lime', 
+        name: 'Neon Lime', 
+        emoji: '🎾',
+        primary: '#84CC16', 
+        secondary: '#A3E635',
+        bgDark: '#0E140A', 
+        bgMedium: '#121A0D', 
+        bgLight: '#253515',
+        text: '#F0FCE8',
+        border: '#3A5A2A'
+    },
+    { 
+        id: 'coral-reef', 
+        name: 'Coral Reef', 
+        emoji: '🐠',
+        primary: '#FB7185', 
+        secondary: '#FDA4AF',
+        bgDark: '#140A0C', 
+        bgMedium: '#1A0D10', 
+        bgLight: '#351A20',
+        text: '#FCE8EC',
+        border: '#5A2A35'
+    },
+    { 
+        id: 'slate-steel', 
+        name: 'Slate Steel', 
+        emoji: '🔩',
+        primary: '#94A3B8', 
+        secondary: '#CBD5E1',
+        bgDark: '#0F1114', 
+        bgMedium: '#14171A', 
+        bgLight: '#252A30',
+        text: '#F0F4F8',
+        border: '#3A4050'
+    }
+];
+
+// Current theme - default is midnight-pink (index 0)
+let currentThemeIndex = localStorage.getItem('themeIndex') ? parseInt(localStorage.getItem('themeIndex')) : 0;
+
+// Apply theme function
+function applyTheme(theme) {
+    const root = document.documentElement;
+    
+    // CSS custom properties approach - update all color references
+    root.style.setProperty('--primary-color', theme.primary);
+    root.style.setProperty('--secondary-color', theme.secondary);
+    root.style.setProperty('--bg-dark', theme.bgDark);
+    root.style.setProperty('--bg-medium', theme.bgMedium);
+    root.style.setProperty('--bg-light', theme.bgLight);
+    root.style.setProperty('--text-color', theme.text);
+    root.style.setProperty('--border-color', theme.border);
+    
+    // Update body background
+    document.body.style.background = `linear-gradient(135deg, ${theme.bgDark} 0%, ${theme.bgMedium} 100%)`;
+    
+    // Update chat wrapper
+    const wrapper = document.querySelector('.chat-wrapper');
+    if (wrapper) {
+        wrapper.style.background = theme.bgDark;
+        wrapper.style.borderColor = theme.bgLight;
+    }
+    
+    // Update header
+    const header = document.querySelector('.chat-header');
+    if (header) {
+        header.style.background = `linear-gradient(135deg, ${theme.bgMedium} 0%, ${theme.bgLight} 100%)`;
+        header.style.borderBottomColor = theme.primary;
+    }
+    
+    // Update powered-by badge
+    const poweredBy = document.querySelector('.powered-by');
+    if (poweredBy) {
+        poweredBy.style.background = theme.primary;
+    }
+    
+    // Update author link
+    const authorLink = document.querySelector('.author-info a');
+    if (authorLink) {
+        authorLink.style.color = theme.primary;
+    }
+    
+    // Update chat body
+    const chatBody = document.querySelector('.chat-body');
+    if (chatBody) {
+        chatBody.style.background = theme.bgDark;
+    }
+    
+    // Update messages area
+    const messages = document.querySelector('.messages');
+    if (messages) {
+        messages.style.background = theme.bgMedium;
+        messages.style.borderColor = theme.bgLight;
+    }
+    
+    // Update scrollbar
+    const styleSheet = document.createElement('style');
+    styleSheet.id = 'theme-scrollbar';
+    const oldStyle = document.getElementById('theme-scrollbar');
+    if (oldStyle) oldStyle.remove();
+    styleSheet.textContent = `
+        .messages::-webkit-scrollbar-thumb { background: ${theme.primary}; }
+        .messages::-webkit-scrollbar-track { background: ${theme.bgDark}; }
+    `;
+    document.head.appendChild(styleSheet);
+    
+    // Update user avatar
+    document.querySelectorAll('.user .avatar').forEach(el => {
+        el.style.background = `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`;
+    });
+    
+    // Update bot avatar
+    document.querySelectorAll('.bot .avatar').forEach(el => {
+        el.style.background = `linear-gradient(135deg, ${theme.bgMedium} 0%, ${theme.bgLight} 100%)`;
+        el.style.borderColor = theme.primary;
+    });
+    
+    // Update user bubbles
+    document.querySelectorAll('.user .bubble').forEach(el => {
+        el.style.background = `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`;
+    });
+    
+    // Update bot bubbles
+    document.querySelectorAll('.bot .bubble').forEach(el => {
+        el.style.background = theme.bgMedium;
+        el.style.borderColor = theme.border;
+        el.style.color = theme.text;
+    });
+    
+    // Update search section
+    const searchSection = document.querySelector('.search-section');
+    if (searchSection) {
+        searchSection.style.background = theme.bgMedium;
+        searchSection.style.borderColor = theme.bgLight;
+    }
+    
+    // Update search input
+    const searchInputEl = document.querySelector('.search-input');
+    if (searchInputEl) {
+        searchInputEl.style.background = theme.bgMedium;
+        searchInputEl.style.borderColor = theme.bgLight;
+        searchInputEl.style.color = theme.text;
+    }
+    
+    // Update search button
+    const searchBtnEl = document.querySelector('.search-btn');
+    if (searchBtnEl) {
+        searchBtnEl.style.background = `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`;
+    }
+    
+    // Update chat input section
+    const chatInputSection = document.querySelector('.chat-input-section');
+    if (chatInputSection) {
+        chatInputSection.style.background = theme.bgMedium;
+        chatInputSection.style.borderColor = theme.bgLight;
+    }
+    
+    // Update message input
+    const messageInputEl = document.querySelector('.message-input');
+    if (messageInputEl) {
+        messageInputEl.style.background = theme.bgMedium;
+        messageInputEl.style.borderColor = theme.bgLight;
+        messageInputEl.style.color = theme.text;
+    }
+    
+    // Update file label
+    const fileLabelEl = document.querySelector('.file-label');
+    if (fileLabelEl) {
+        fileLabelEl.style.background = theme.bgMedium;
+        fileLabelEl.style.borderColor = theme.bgLight;
+    }
+    
+    // Update send button
+    const sendBtnEl = document.querySelector('.send-btn');
+    if (sendBtnEl) {
+        sendBtnEl.style.background = `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`;
+    }
+    
+    // Update format buttons
+    document.querySelectorAll('.format-btn').forEach(btn => {
+        if (btn.classList.contains('active')) {
+            btn.style.background = `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`;
+            btn.style.borderColor = theme.primary;
+        } else {
+            btn.style.background = theme.bgMedium;
+            btn.style.borderColor = theme.bgLight;
+        }
+    });
+    
+    // Update result buttons dynamically
+    const dynamicStyleSheet = document.createElement('style');
+    dynamicStyleSheet.id = 'theme-dynamic';
+    const oldDynamic = document.getElementById('theme-dynamic');
+    if (oldDynamic) oldDynamic.remove();
+    dynamicStyleSheet.textContent = `
+        .result-btn { 
+            background: linear-gradient(135deg, ${theme.bgMedium} 0%, ${theme.bgLight} 100%) !important;
+            border-color: ${theme.primary} !important;
+            color: ${theme.text} !important;
+        }
+        .result-btn:hover { 
+            background: linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%) !important;
+        }
+        .search-input:focus, .message-input:focus {
+            border-color: ${theme.primary} !important;
+            box-shadow: 0 0 0 3px ${theme.primary}33 !important;
+        }
+        .file-label:hover, .file-label.has-file {
+            border-color: ${theme.primary} !important;
+        }
+        .file-label.has-file {
+            background: ${theme.primary}33 !important;
+        }
+        .file-name-display {
+            color: ${theme.primary} !important;
+            background: ${theme.primary}1a !important;
+        }
+        .bot .bubble.markdown-content strong { color: ${theme.primary} !important; }
+        .bot .bubble.markdown-content li::marker { color: ${theme.primary} !important; }
+        .bot .bubble.markdown-content code { color: ${theme.primary} !important; }
+        .bot .bubble.markdown-content blockquote { border-left-color: ${theme.primary} !important; }
+        .bot .bubble.markdown-content a { color: ${theme.primary} !important; }
+        .bot .bubble.markdown-content th { 
+            background: linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%) !important;
+        }
+    `;
+    document.head.appendChild(dynamicStyleSheet);
+    
+    // Update theme modal content background
+    const modalContent = document.querySelector('.theme-modal-content');
+    if (modalContent) {
+        modalContent.style.background = theme.bgMedium;
+        modalContent.style.borderColor = theme.border;
+    }
+    
+    // Save theme preference
+    localStorage.setItem('themeIndex', colorThemes.indexOf(theme));
+}
+
+// Generate theme options in modal
+function generateThemeOptions() {
+    const grid = document.getElementById('theme-grid');
+    grid.innerHTML = colorThemes.map((theme, index) => `
+        <div class="theme-option ${index === currentThemeIndex ? 'active' : ''}" 
+             data-theme-index="${index}"
+             style="background: ${theme.bgMedium}; border-color: ${theme.border};">
+            <div class="theme-preview" style="background: linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%);">
+                ${theme.emoji}
+            </div>
+            <div class="theme-name">${theme.name}</div>
+        </div>
+    `).join('');
+    
+    // Add click handlers
+    grid.querySelectorAll('.theme-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const index = parseInt(option.dataset.themeIndex);
+            currentThemeIndex = index;
+            applyTheme(colorThemes[index]);
+            
+            // Update active state
+            grid.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+            option.classList.add('active');
+            
+            // Show notification
+            showNotification(`🎨 Theme changed to ${colorThemes[index].name}`, 'success');
+            
+            // Close modal after short delay
+            setTimeout(() => {
+                document.getElementById('theme-modal').classList.remove('show');
+            }, 500);
+        });
+    });
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    const notification = document.getElementById('status-notification');
+    notification.textContent = message;
+    notification.className = `status-notification ${type} show`;
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// Theme modal controls
+const themeModal = document.getElementById('theme-modal');
+const colorBtn = document.getElementById('color-btn');
+const themeCloseBtn = document.getElementById('theme-close-btn');
+
+colorBtn.addEventListener('click', () => {
+    generateThemeOptions();
+    themeModal.classList.add('show');
+});
+
+themeCloseBtn.addEventListener('click', () => {
+    themeModal.classList.remove('show');
+});
+
+themeModal.addEventListener('click', (e) => {
+    if (e.target === themeModal) {
+        themeModal.classList.remove('show');
+    }
+});
+
+// Start button - restart server
+const startBtn = document.getElementById('start-btn');
+startBtn.addEventListener('click', () => {
+    showNotification('🔄 Restarting server... Please refresh in 2 seconds', 'info');
+    
+    // Send restart request (this will cause a brief disconnect)
+    fetch('/api/restart/', {
+        method: 'POST'
+    }).catch(() => {
+        // Expected - server is restarting
+    });
+    
+    // Auto-refresh after delay
+    setTimeout(() => {
+        window.location.reload();
+    }, 2500);
+});
+
+// Update format button styles when clicked
+formatBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const theme = colorThemes[currentThemeIndex];
+        formatBtns.forEach(b => {
+            if (b.classList.contains('active')) {
+                b.style.background = `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`;
+                b.style.borderColor = theme.primary;
+            } else {
+                b.style.background = theme.bgMedium;
+                b.style.borderColor = theme.bgLight;
+            }
+        });
+    });
+});
+
+// Apply saved theme on load
+applyTheme(colorThemes[currentThemeIndex]);
 </script>
 </body>
 </html>

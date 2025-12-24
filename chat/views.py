@@ -418,3 +418,22 @@ def read_file_content_api(request):
     
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+def restart_server_api(request):
+    """
+    Restart the Django development server.
+    This triggers a reload by modifying a watched file.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method.'}, status=405)
+    
+    try:
+        # Touch a file to trigger Django's auto-reload
+        import pathlib
+        views_file = pathlib.Path(__file__)
+        views_file.touch()
+        return JsonResponse({'status': 'restarting'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

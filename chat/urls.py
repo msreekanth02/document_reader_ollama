@@ -8,4 +8,5 @@ urlpatterns = [
     path('api/fetch_file/', views.fetch_file_api, name='fetch_file_api'),
     path('api/list_dir/', views.list_dir_api, name='list_dir_api'),
     path('api/read_file/', views.read_file_content_api, name='read_file_content_api'),
+    path('api/restart/', views.restart_server_api, name='restart_server_api'),
 ]
