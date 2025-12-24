@@ -278,6 +278,10 @@ If PDF text extraction fails:
 
 This application runs entirely on your local machine. No data is sent to external servers. All AI processing is done locally through Ollama.
 
+## Author
+
+Created by **Sree** - [GitHub](https://github.com/msreekanth02)
+
 ## License
 
 See the LICENSE file for details.

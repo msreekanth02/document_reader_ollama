@@ -18,7 +18,7 @@
         }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+            background: linear-gradient(135deg, #0A0A0F 0%, #0D0D14 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -28,15 +28,15 @@
         .chat-wrapper {
             width: 100%;
             max-width: 900px;
-            background: #0F0F1A;
+            background: #050508;
             border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
             overflow: hidden;
             margin: 0 auto;
-            border: 1px solid #2A2A4A;
+            border: 1px solid #1A1A2A;
         }
         .chat-header {
-            background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 100%);
+            background: linear-gradient(135deg, #0A0A12 0%, #0D1525 100%);
             padding: 24px 32px;
             text-align: center;
             border-bottom: 1px solid #E94560;
@@ -54,23 +54,23 @@
         }
         .chat-body {
             padding: 24px;
-            background: #0F0F1A;
+            background: #050508;
         }
         .messages {
             min-height: 350px;
             max-height: 400px;
             overflow-y: auto;
             padding: 16px;
-            background: #16213E;
+            background: #0A0A12;
             border-radius: 16px;
-            border: 1px solid #2A2A4A;
+            border: 1px solid #1A1A2A;
             margin-bottom: 20px;
         }
         .messages::-webkit-scrollbar {
             width: 6px;
         }
         .messages::-webkit-scrollbar-track {
-            background: #1A1A2E;
+            background: #0A0A0F;
             border-radius: 3px;
         }
         .messages::-webkit-scrollbar-thumb {
@@ -105,7 +105,7 @@
             margin-left: 12px;
         }
         .bot .avatar {
-            background: linear-gradient(135deg, #0F3460 0%, #16213E 100%);
+            background: linear-gradient(135deg, #0A0A12 0%, #0D0D14 100%);
             border: 2px solid #E94560;
             margin-right: 12px;
         }
@@ -125,7 +125,7 @@
             border-bottom-right-radius: 4px;
         }
         .bot .bubble {
-            background: #1A1A2E;
+            background: #0D0D14;
             color: #E8E8E8;
             border-bottom-left-radius: 4px;
             border: 1px solid #2A2A4A;
@@ -140,10 +140,10 @@
             text-align: right;
         }
         .search-section {
-            background: #16213E;
+            background: #0A0A12;
             padding: 16px;
             border-radius: 16px;
-            border: 1px solid #2A2A4A;
+            border: 1px solid #1A1A2A;
             margin-bottom: 16px;
         }
         .search-section label {
@@ -160,17 +160,17 @@
         .search-input {
             flex: 1;
             padding: 14px 18px;
-            border: 2px solid #2A2A4A;
+            border: 2px solid #1A1A2A;
             border-radius: 12px;
             font-size: 0.95rem;
             transition: all 0.2s;
-            background: #1A1A2E;
+            background: #0D0D14;
             color: #E8E8E8;
         }
         .search-input:focus {
             outline: none;
             border-color: #E94560;
-            background: #1A1A2E;
+            background: #0D0D14;
             box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
         }
         .search-input::placeholder {
@@ -195,10 +195,10 @@
             box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
         }
         .chat-input-section {
-            background: #16213E;
+            background: #0A0A12;
             padding: 16px;
             border-radius: 16px;
-            border: 1px solid #2A2A4A;
+            border: 1px solid #1A1A2A;
         }
         .chat-input-section label {
             display: block;
@@ -215,17 +215,17 @@
         .message-input {
             flex: 1;
             padding: 14px 18px;
-            border: 2px solid #2A2A4A;
+            border: 2px solid #1A1A2A;
             border-radius: 12px;
             font-size: 0.95rem;
             transition: all 0.2s;
-            background: #1A1A2E;
+            background: #0D0D14;
             color: #E8E8E8;
         }
         .message-input:focus {
             outline: none;
             border-color: #E94560;
-            background: #1A1A2E;
+            background: #0D0D14;
             box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
         }
         .message-input::placeholder {
@@ -243,15 +243,15 @@
             justify-content: center;
             width: 48px;
             height: 48px;
-            background: #1A1A2E;
-            border: 2px solid #2A2A4A;
+            background: #0D0D14;
+            border: 2px solid #1A1A2A;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
             font-size: 1.2rem;
         }
         .file-label:hover {
-            background: #2A2A4A;
+            background: #1A1A2A;
             border-color: #E94560;
         }
         .file-label.has-file {
@@ -296,7 +296,7 @@
             margin: 6px 0;
             padding: 10px 14px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #0F3460 0%, #16213E 100%);
+            background: linear-gradient(135deg, #0A0A12 0%, #0D0D14 100%);
             color: #E8E8E8;
             border: 1px solid #E94560;
             cursor: pointer;
@@ -439,7 +439,7 @@
             background: #16213E;
         }
         .bot .bubble.markdown-content tr:hover {
-            background: #0F3460;
+            background: #0A0A12;
         }
         /* Format selector */
         .format-selector {
@@ -450,8 +450,8 @@
         }
         .format-btn {
             padding: 6px 12px;
-            border: 2px solid #2A2A4A;
-            background: #1A1A2E;
+            border: 2px solid #1A1A2A;
+            background: #0D0D14;
             border-radius: 8px;
             font-size: 0.8rem;
             cursor: pointer;
@@ -478,12 +478,24 @@
             display: inline-block;
             margin-top: 10px;
             padding: 6px 14px;
-            background: rgba(233, 69, 96, 0.2);
+            background: rgba(233, 69, 96, 0.15);
             border-radius: 20px;
             font-size: 0.75rem;
             color: #E94560;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+        .author-info {
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.5);
+        }
+        .author-info a {
+            color: #E94560;
+            text-decoration: none;
+        }
+        .author-info a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -493,6 +505,7 @@
         <h1 title="Built with Ollama Open Source LLMs - Your data stays private">PrivateAI Assistant</h1>
         <p>Search files, ask questions, and get AI-powered answers</p>
         <span class="powered-by">Powered by Ollama Open Source LLMs</span>
+        <div class="author-info">Created by <a href="https://github.com/msreekanth02" target="_blank">Sree</a></div>
     </div>
     <div class="chat-body">
         <div class="messages" id="messages">
