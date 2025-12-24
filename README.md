@@ -48,6 +48,30 @@ A private, local AI-powered chat application built with Django and Ollama. This 
   - **Code**: Technical response with code blocks
 - Markdown rendering with syntax highlighting for code blocks
 
+### Theme Customization
+- **15 Beautiful Color Themes** to personalize your experience:
+  - 🌙 Midnight Pink
+  - 🌊 Ocean Blue
+  - 🌲 Forest Green
+  - 👑 Royal Purple
+  - 🌅 Sunset Orange
+  - 🍒 Cherry Red
+  - ✨ Golden Amber
+  - 💎 Cyber Cyan
+  - 💜 Lavender Dream
+  - 🍃 Mint Fresh
+  - 🌸 Rose Gold
+  - ❄️ Arctic Blue
+  - 🎾 Neon Lime
+  - 🐠 Coral Reef
+  - 🔩 Slate Steel
+- Theme preference is saved and remembered across sessions
+- Click the **🎨 Color** button to open the theme selector
+
+### Server Control
+- **🚀 Start Button** to restart the Django server from the UI
+- Useful for applying changes without terminal access
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -217,6 +241,7 @@ document_reader_ollama/
 | `/api/fetch_file/` | POST | Fetch file content for attachment |
 | `/api/list_dir/` | POST | List directory contents |
 | `/api/read_file/` | POST | Read file content |
+| `/api/restart/` | POST | Restart Django development server |
 
 ## Troubleshooting
 
