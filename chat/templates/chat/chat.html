@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrivateAI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .chat-wrapper {
+            width: 100%;
+            max-width: 900px;
+            background: #0F0F1A;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            margin: 0 auto;
+            border: 1px solid #2A2A4A;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 100%);
+            padding: 24px 32px;
+            text-align: center;
+            border-bottom: 1px solid #E94560;
+        }
+        .chat-header h1 {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .chat-header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+        }
+        .chat-body {
+            padding: 24px;
+            background: #0F0F1A;
+        }
+        .messages {
+            min-height: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 16px;
+            background: #16213E;
+            border-radius: 16px;
+            border: 1px solid #2A2A4A;
+            margin-bottom: 20px;
+        }
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        .messages::-webkit-scrollbar-track {
+            background: #1A1A2E;
+            border-radius: 3px;
+        }
+        .messages::-webkit-scrollbar-thumb {
+            background: #E94560;
+            border-radius: 3px;
+        }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .user .avatar {
+            background: linear-gradient(135deg, #E94560 0%, #FF6B6B 100%);
+            margin-left: 12px;
+        }
+        .bot .avatar {
+            background: linear-gradient(135deg, #0F3460 0%, #16213E 100%);
+            border: 2px solid #E94560;
+            margin-right: 12px;
+        }
+        .message-content {
+            max-width: 70%;
+        }
+        .bubble {
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .user .bubble {
+            background: linear-gradient(135deg, #E94560 0%, #FF6B6B 100%);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .bot .bubble {
+            background: #1A1A2E;
+            color: #E8E8E8;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #2A2A4A;
+        }
+        .timestamp {
+            font-size: 0.75rem;
+            color: #6B7280;
+            margin-top: 6px;
+            padding: 0 4px;
+        }
+        .user .timestamp {
+            text-align: right;
+        }
+        .search-section {
+            background: #16213E;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid #2A2A4A;
+            margin-bottom: 16px;
+        }
+        .search-section label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #9CA3AF;
+            margin-bottom: 10px;
+        }
+        .search-row {
+            display: flex;
+            gap: 10px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid #2A2A4A;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: #1A1A2E;
+            color: #E8E8E8;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #E94560;
+            background: #1A1A2E;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+        }
+        .search-input::placeholder {
+            color: #6B7280;
+        }
+        .search-btn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #E94560 0%, #FF6B6B 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+        .chat-input-section {
+            background: #16213E;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid #2A2A4A;
+        }
+        .chat-input-section label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #9CA3AF;
+            margin-bottom: 10px;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .message-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid #2A2A4A;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: #1A1A2E;
+            color: #E8E8E8;
+        }
+        .message-input:focus {
+            outline: none;
+            border-color: #E94560;
+            background: #1A1A2E;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+        }
+        .message-input::placeholder {
+            color: #6B7280;
+        }
+        .file-input-wrapper {
+            position: relative;
+        }
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: #1A1A2E;
+            border: 2px solid #2A2A4A;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+        }
+        .file-label:hover {
+            background: #2A2A4A;
+            border-color: #E94560;
+        }
+        .file-label.has-file {
+            background: rgba(233, 69, 96, 0.2);
+            border-color: #E94560;
+        }
+        .send-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #E94560 0%, #FF6B6B 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6B7280;
+        }
+        .welcome-message .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        .welcome-message h3 {
+            color: #E8E8E8;
+            margin-bottom: 8px;
+        }
+        .result-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin: 6px 0;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #0F3460 0%, #16213E 100%);
+            color: #E8E8E8;
+            border: 1px solid #E94560;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .result-btn:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3);
+            background: linear-gradient(135deg, #E94560 0%, #FF6B6B 100%);
+        }
+        .file-name-display {
+            font-size: 0.8rem;
+            color: #E94560;
+            margin-top: 8px;
+            padding: 6px 10px;
+            background: rgba(233, 69, 96, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+        .file-name-display.show {
+            display: block;
+        }
+        
+        /* Markdown content styling */
+        .bot .bubble.markdown-content {
+            padding: 16px 20px;
+        }
+        .bot .bubble.markdown-content h1,
+        .bot .bubble.markdown-content h2,
+        .bot .bubble.markdown-content h3,
+        .bot .bubble.markdown-content h4 {
+            margin: 16px 0 8px 0;
+            color: #E8E8E8;
+            font-weight: 600;
+        }
+        .bot .bubble.markdown-content h1:first-child,
+        .bot .bubble.markdown-content h2:first-child,
+        .bot .bubble.markdown-content h3:first-child {
+            margin-top: 0;
+        }
+        .bot .bubble.markdown-content h1 { font-size: 1.4rem; }
+        .bot .bubble.markdown-content h2 { font-size: 1.2rem; }
+        .bot .bubble.markdown-content h3 { font-size: 1.1rem; }
+        .bot .bubble.markdown-content p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .bot .bubble.markdown-content p:first-child {
+            margin-top: 0;
+        }
+        .bot .bubble.markdown-content p:last-child {
+            margin-bottom: 0;
+        }
+        .bot .bubble.markdown-content strong {
+            color: #E94560;
+            font-weight: 600;
+        }
+        .bot .bubble.markdown-content em {
+            font-style: italic;
+            color: #9CA3AF;
+        }
+        .bot .bubble.markdown-content ul,
+        .bot .bubble.markdown-content ol {
+            margin: 12px 0;
+            padding-left: 24px;
+        }
+        .bot .bubble.markdown-content li {
+            margin: 6px 0;
+            line-height: 1.5;
+        }
+        .bot .bubble.markdown-content li::marker {
+            color: #E94560;
+        }
+        .bot .bubble.markdown-content code {
+            background: #0F3460;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.85em;
+            color: #E94560;
+        }
+        .bot .bubble.markdown-content pre {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+        .bot .bubble.markdown-content pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .bot .bubble.markdown-content blockquote {
+            border-left: 4px solid #E94560;
+            background: #0F3460;
+            margin: 12px 0;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            color: #E8E8E8;
+        }
+        .bot .bubble.markdown-content blockquote p {
+            margin: 0;
+        }
+        .bot .bubble.markdown-content hr {
+            border: none;
+            height: 1px;
+            background: #2A2A4A;
+            margin: 16px 0;
+        }
+        .bot .bubble.markdown-content a {
+            color: #E94560;
+            text-decoration: none;
+        }
+        .bot .bubble.markdown-content a:hover {
+            text-decoration: underline;
+        }
+        /* Table styling */
+        .bot .bubble.markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.9em;
+        }
+        .bot .bubble.markdown-content th,
+        .bot .bubble.markdown-content td {
+            border: 1px solid #2A2A4A;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        .bot .bubble.markdown-content th {
+            background: linear-gradient(135deg, #E94560 0%, #FF6B6B 100%);
+            color: #fff;
+            font-weight: 600;
+        }
+        .bot .bubble.markdown-content tr:nth-child(even) {
+            background: #16213E;
+        }
+        .bot .bubble.markdown-content tr:hover {
+            background: #0F3460;
+        }
+        /* Format selector */
+        .format-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .format-btn {
+            padding: 6px 12px;
+            border: 2px solid #2A2A4A;
+            background: #1A1A2E;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #9CA3AF;
+        }
+        .format-btn:hover {
+            border-color: #E94560;
+            color: #E94560;
+        }
+        .format-btn.active {
+            background: linear-gradient(135deg, #E94560 0%, #FF6B6B 100%);
+            color: #fff;
+            border-color: transparent;
+        }
+        .chat-header h1 {
+            cursor: help;
+            transition: all 0.2s;
+        }
+        .chat-header h1:hover {
+            text-shadow: 0 0 15px rgba(233, 69, 96, 0.6);
+        }
+        .powered-by {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 14px;
+            background: rgba(233, 69, 96, 0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #E94560;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+    </style>
+</head>
+<body>
+<div class="chat-wrapper">
+    <div class="chat-header">
+        <h1 title="Built with Ollama Open Source LLMs - Your data stays private">PrivateAI Assistant</h1>
+        <p>Search files, ask questions, and get AI-powered answers</p>
+        <span class="powered-by">Powered by Ollama Open Source LLMs</span>
+    </div>
+    <div class="chat-body">
+        <div class="messages" id="messages">
+            <div class="welcome-message">
+                <div class="icon">💬</div>
+                <h3>Welcome!</h3>
+                <p>Search for files or start a conversation with AI</p>
+            </div>
+        </div>
+        
+        <div class="search-section">
+            <label>🔍 Search Files & Folders</label>
+            <div class="search-row">
+                <input type="text" id="search-input" class="search-input" placeholder="Search by name, type (pdf, txt), or content:keyword..." />
+                <button type="button" id="search-btn" class="search-btn">
+                    <span>🔎</span> Search
+                </button>
+            </div>
+        </div>
+        
+        <div class="chat-input-section">
+            <label>💬 Chat with AI</label>
+            <div class="format-selector">
+                <button type="button" class="format-btn active" data-format="default" title="AI decides the best format">🤖 Auto</button>
+                <button type="button" class="format-btn" data-format="bullets" title="Bullet points">• Bullets</button>
+                <button type="button" class="format-btn" data-format="numbered" title="Numbered list">1. Numbered</button>
+                <button type="button" class="format-btn" data-format="table" title="Table format">📊 Table</button>
+                <button type="button" class="format-btn" data-format="brief" title="Short & concise">⚡ Brief</button>
+                <button type="button" class="format-btn" data-format="detailed" title="Detailed explanation">📝 Detailed</button>
+                <button type="button" class="format-btn" data-format="code" title="Code/Technical">💻 Code</button>
+            </div>
+            <form id="chat-form">
+                <div class="input-row">
+                    <input type="text" id="message-input" class="message-input" placeholder="Type your message..." autocomplete="off" />
+                    <div class="file-input-wrapper">
+                        <input type="file" id="file-input" />
+                        <label for="file-input" class="file-label" id="file-label" title="Attach a file">📎</label>
+                    </div>
+                    <button type="submit" class="send-btn">
+                        <span>Send</span> ➤
+                    </button>
+                </div>
+                <div class="file-name-display" id="file-name-display"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Configure marked for markdown rendering
+marked.setOptions({
+    breaks: true,
+    gfm: true,
+    highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+            return hljs.highlight(code, { language: lang }).value;
+        }
+        return hljs.highlightAuto(code).value;
+    }
+});
+
+const form = document.getElementById('chat-form');
+const input = document.getElementById('message-input');
+const messagesDiv = document.getElementById('messages');
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+const fileInput = document.getElementById('file-input');
+const fileLabel = document.getElementById('file-label');
+const fileNameDisplay = document.getElementById('file-name-display');
+
+// Format selection
+let selectedFormat = 'default';
+const formatBtns = document.querySelectorAll('.format-btn');
+formatBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        formatBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedFormat = btn.dataset.format;
+    });
+});
+
+// Clear welcome message on first interaction
+let welcomeCleared = false;
+function clearWelcome() {
+    if (!welcomeCleared) {
+        const welcome = messagesDiv.querySelector('.welcome-message');
+        if (welcome) welcome.remove();
+        welcomeCleared = true;
+    }
+}
+
+// File input change handler
+fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+        fileLabel.classList.add('has-file');
+        fileLabel.textContent = '✓';
+        fileNameDisplay.textContent = '📄 ' + fileInput.files[0].name;
+        fileNameDisplay.classList.add('show');
+    } else {
+        fileLabel.classList.remove('has-file');
+        fileLabel.textContent = '📎';
+        fileNameDisplay.classList.remove('show');
+    }
+});
+
+function appendMessage(sender, text, useMarkdown = false) {
+    clearWelcome();
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message ' + sender;
+    
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = sender === 'user' ? '👤' : '🤖';
+    
+    const content = document.createElement('div');
+    content.className = 'message-content';
+    
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    
+    if (useMarkdown && sender === 'bot') {
+        bubble.classList.add('markdown-content');
+        bubble.innerHTML = marked.parse(text);
+        // Apply syntax highlighting to code blocks
+        bubble.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+    } else {
+        bubble.textContent = text;
+    }
+    
+    const timestamp = document.createElement('div');
+    timestamp.className = 'timestamp';
+    const now = new Date();
+    timestamp.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    content.appendChild(bubble);
+    content.appendChild(timestamp);
+    msgDiv.appendChild(avatar);
+    msgDiv.appendChild(content);
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Search handler
+searchBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const query = searchInput.value.trim();
+    if (!query) return;
+    appendMessage('user', `🔍 Search: ${query}`);
+    appendMessage('bot', '⏳ Searching...');
+    const botMsgDiv = messagesDiv.lastChild;
+    try {
+        const response = await fetch('/api/search/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query })
+        });
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+            botMsgDiv.querySelector('.bubble').innerHTML =
+                '<strong>Found ' + data.results.length + ' results:</strong><br>' + 
+                data.results.map((r, i) => {
+                    let label = r.type === 'directory' ? '📁' : '📄';
+                    return `<button class="result-btn" onclick="window.selectFile('${encodeURIComponent(r.path)}')">${label} ${r.path}</button>`;
+                }).join('');
+        } else {
+            botMsgDiv.querySelector('.bubble').textContent = data.error || '❌ No results found.';
+        }
+    } catch (err) {
+        botMsgDiv.querySelector('.bubble').textContent = '❌ Error: ' + err;
+    }
+    searchInput.value = '';
+});
+
+// File selection handler
+window.selectFile = async function(path) {
+    const decodedPath = decodeURIComponent(path);
+    appendMessage('user', `📂 Selected: ${decodedPath}`);
+    appendMessage('bot', '⏳ Processing...');
+    const botMsgDiv = messagesDiv.lastChild;
+    
+    // Try as directory first
+    try {
+        const response = await fetch('/api/list_dir/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: decodedPath })
+        });
+        const data = await response.json();
+        if (data && data.files && data.files.length > 0) {
+            botMsgDiv.querySelector('.bubble').innerHTML =
+                '<strong>📁 Directory contents:</strong><br>' + 
+                data.files.map(f => `<button class="result-btn" onclick="window.selectFile('${encodeURIComponent(f)}')">${f}</button>`).join('');
+            return;
+        }
+    } catch (err) {
+        // Not a directory, try as file
+    }
+    
+    // File: fetch and attach
+    try {
+        const response = await fetch('/api/fetch_file/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: decodedPath })
+        });
+        if (!response.ok) throw new Error('Failed to fetch file');
+        const data = await response.json();
+        if (data && data.filename && data.content) {
+            const byteCharacters = atob(data.content);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const file = new File([byteArray], data.filename);
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+            fileLabel.classList.add('has-file');
+            fileLabel.textContent = '✓';
+            fileNameDisplay.textContent = '📄 ' + data.filename;
+            fileNameDisplay.classList.add('show');
+            botMsgDiv.querySelector('.bubble').textContent = `✅ File "${data.filename}" attached! Ask your question below.`;
+        } else {
+            botMsgDiv.querySelector('.bubble').textContent = data.error || '❌ Could not load file.';
+        }
+    } catch (err) {
+        botMsgDiv.querySelector('.bubble').textContent = '❌ Error: ' + err;
+    }
+};
+
+// Chat form handler
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = input.value.trim();
+    const file = fileInput.files[0];
+    if (!message && !file) return;
+    
+    const formatLabel = selectedFormat !== 'default' ? ` [${selectedFormat}]` : '';
+    appendMessage('user', message + (file ? ` 📎 ${file.name}` : '') + formatLabel);
+    input.value = '';
+    
+    appendMessage('bot', '⏳ Thinking...');
+    const botMsgDiv = messagesDiv.lastChild;
+    
+    try {
+        const formData = new FormData();
+        formData.append('message', message);
+        formData.append('format', selectedFormat);
+        if (file) formData.append('file', file);
+        
+        const response = await fetch('/api/message/', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        const responseText = data.response || data.error || '❌ No response';
+        
+        // Render with markdown
+        const bubble = botMsgDiv.querySelector('.bubble');
+        bubble.classList.add('markdown-content');
+        bubble.innerHTML = marked.parse(responseText);
+        bubble.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+    } catch (err) {
+        botMsgDiv.querySelector('.bubble').textContent = '❌ Error: ' + err;
+    }
+    
+    // Clear file input
+    fileInput.value = '';
+    fileLabel.classList.remove('has-file');
+    fileLabel.textContent = '📎';
+    fileNameDisplay.classList.remove('show');
+});
+
+// Enter key for search
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        searchBtn.click();
+    }
+});
+</script>
+</body>
+</html>
